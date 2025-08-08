@@ -18,7 +18,7 @@ const zendeskConnectorOptions: ConnectorOptions<ZendeskSourceOptions<"users">> =
         auth: {
           subDomain: "d3v-matheus",
           email: "mpaula@aktienow.com",
-          token: "yHzFU8lNkZr1CPSDmO67atvfIjOwl3Ybe8pxxNX9",
+          token: "",
         },
       },
     },
