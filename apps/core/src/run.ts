@@ -1,35 +1,33 @@
 import { ConnectorOptions, ZendeskSourceOptions } from "src/types";
 import { createZendeskConnector } from "./connectors/zendesk";
+import { orchestrate } from "./connectors/zendesk/orchestrator";
 
-const zendeskConnectorOptions: ConnectorOptions<ZendeskSourceOptions<"users">> =
-  {
-    destination: {
-      type: "zendesk",
+const ticketsConnector: ConnectorOptions<ZendeskSourceOptions<"tickets">> = {
+  destination: {
+    type: "zendesk",
+    auth: {
+      subDomain: "d3v",
+      email: "later",
+      token: "later",
+    },
+  },
+  source: {
+    type: "zendesk",
+    options: {
+      name: "tickets",
       auth: {
-        subDomain: "d3v",
-        email: "later",
-        token: "later",
+        subDomain: "d3v-matheus",
+        email: "mpaula@aktienow.com",
+        token: "token",
       },
     },
-    source: {
-      type: "zendesk",
-      options: {
-        name: "users",
-        auth: {
-          subDomain: "d3v-matheus",
-          email: "mpaula@aktienow.com",
-          token: "",
-        },
-      },
-    },
-  };
+  },
+};
 
-const connector = createZendeskConnector(zendeskConnectorOptions);
+const connector = createZendeskConnector(ticketsConnector);
 
 async function run() {
-  await connector.connect();
-  const count = await connector.count();
-  console.log(`Total users: ${count}`);
+  orchestrate(connector);
 }
 
 run().catch((error) => {

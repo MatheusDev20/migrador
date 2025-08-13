@@ -10,7 +10,7 @@ import axios, { AxiosInstance } from "axios";
 import { buildLogger } from "@repo/logger";
 
 import { resourceMap, ZendeskResourceConfig } from "./resources-map";
-import { decode, encode } from "src/utils";
+import { decode, encode } from "../../utils";
 
 export function createZendeskConnector<T extends keyof ZendeskResourceTypeMap>(
   options: ConnectorOptions<ZendeskSourceOptions<T>>,
@@ -57,7 +57,6 @@ export function createZendeskConnector<T extends keyof ZendeskResourceTypeMap>(
     },
 
     async list({
-      limit = 100,
       cursor,
     }: ListParams): Promise<ListResult<ZendeskResourceTypeMap[T]>> {
       type C = { next?: string };
@@ -66,16 +65,19 @@ export function createZendeskConnector<T extends keyof ZendeskResourceTypeMap>(
 
       const url = c?.next ?? `/${resourceConfiguration.path}`;
       const res = await instance.get(url, {
-        params: c?.next ? {} : { per_page: limit },
+        params: c?.next
+          ? {}
+          : { "page[size]": String(resourceConfiguration.pageChunkSize) },
       });
 
       const items = res.data[
         resourceConfiguration.listField
       ] as ZendeskResourceTypeMap[T][];
 
-      const next = res.data?.next_page as string | null | undefined;
+      const next = res.data.links.next as string | null | undefined;
       return {
         items,
+        meta: res.data.meta ?? null,
         nextCursor: next ? encode({ next }) : undefined,
       };
     },

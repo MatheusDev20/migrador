@@ -77,12 +77,17 @@ export type SourceType = "zendesk" | "other";
 export type Cursor = string | null;
 
 export interface ListParams {
-  limit?: number; // tamanho do batch
-  cursor?: Cursor; // onde retomar
+  limit?: number;
+  cursor?: Cursor;
   filters?: Record<string, any>;
 }
 
 export interface ListResult<T> {
   items: T[];
-  nextCursor?: Cursor; // undefined/null => acabou
+  meta: {
+    has_more: boolean;
+    after_cursor: string | null;
+    before_cursor: string | null;
+  };
+  nextCursor?: Cursor;
 }
